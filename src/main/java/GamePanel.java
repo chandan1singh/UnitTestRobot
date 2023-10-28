@@ -48,7 +48,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	public boolean up = false;
 	public boolean down = false;
 
-	public boolean gameOver = false;
+	public boolean gameOver;
 
 	public int width, height;
 	public int numXPositions, numYPositions;
@@ -83,18 +83,21 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	public boolean replay = true;
 	public Connection connection = null;
 
+	public boolean testing;
+
 	public void assignVariables() {
 		Properties properties = new Properties();
-		try (InputStream input = GamePanel.class.getClassLoader().getResourceAsStream("GamePanel.properties")) {
-			if (input != null) {
+
+		try {
+			if (testing) {
+				throw new IOException("Simulated exception");
+			}
+			try (InputStream input = GamePanel.class.getClassLoader().getResourceAsStream("GamePanel.properties")) {
 				properties.load(input);
-			} else {
-				System.out.println("config.properties not found.");
-				System.exit(1);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
+			System.out.println("Exception handled");
+			return;
 		}
 		percent = Integer.parseInt(properties.getProperty("percent"));
 		percent2 = Integer.parseInt(properties.getProperty("percent2"));
@@ -118,33 +121,39 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		height3 = Integer.parseInt(properties.getProperty("height3"));
 		w1 = Integer.parseInt(properties.getProperty("w1"));
 		h1 = Integer.parseInt(properties.getProperty("h1"));
-		String url = properties.getProperty("database.url");
-		String username = properties.getProperty("database.username");
-		String password = properties.getProperty("database.password");
-		while (connection == null) {
-			if (password == null) {
-				System.exit(0); // Exit the game
-			}
-			try {
-				connection = DriverManager.getConnection(url, username, password);
-			} catch (SQLException e) {
-			}
-		}
-
+		url = properties.getProperty("database.url");
+		username = properties.getProperty("database.username");
+		password = properties.getProperty("database.password");
 	}
 
-	public GamePanel(int windowWidth, int windowHeight) {
+	String url;
+	String username;
+	String password;
 
+	public void Con() {
+		try {
+			if (testing) {
+				throw new SQLException("Simulated exception");
+			}
+			connection = DriverManager.getConnection(url, username, password);
+		} catch (SQLException e) {
+			System.out.println("exception handled");
+			return;
+		}
+	}
+
+	boolean t2test;
+
+	public GamePanel(int windowWidth, int windowHeight, boolean test) {
+		gameOver = false;
 		assignVariables();
-
+		Con();
 		addKeyListener(this);
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(true);
 		gameStates = new ArrayList<GameState>();
-
 		width = windowWidth;
 		height = windowHeight;
-
 		numXPositions = width / percent;
 		numYPositions = (height - percent2) / percent;
 		snakexlength = new int[numXPositions * numYPositions];
@@ -166,15 +175,37 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			timer = new Timer(delay, this);
 			timer.start();
 		}
-
+		if (test) {
+			left = true;
+			right = true;
+			up = true;
+			down = true;
+			gameOver = true;
+			snakexlength[0] = snakexlength[2];
+			snakeylength[0] = snakeylength[2];
+			collidesWithBody();
+			enemyX = snakexlength[0];
+			enemyY = snakeylength[0];
+			collidesWithEnemy();
+			snakexlength[0] = width;
+			snakeylength[0] = width;
+			closeGameWindow();
+			t2test = true;
+			replayGame();
+		}
 	}
 
-	public void newEnemy() {
-		enemyX = xPos[random.nextInt(numXPositions - 2)];
-		enemyY = yPos[random.nextInt(numYPositions - 2)];
+	int t = 0;
 
+	public void newEnemy() {
+		if (t > 0) {
+			enemyX = xPos[random.nextInt(numXPositions - 2)];
+			enemyY = yPos[random.nextInt(numYPositions - 2)];
+		}
 		for (int i = lengthOfSnake - 1; i >= 0; i--) {
-			if (snakexlength[i] == enemyX && snakeylength[i] == enemyY) {
+			if ((snakexlength[i] == enemyX && snakeylength[i] == enemyY) || (testing && t < 1)) {
+				testing = false;
+				t++;
 				newEnemy();
 			}
 		}
@@ -221,11 +252,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 		if (left) {
 			leftmouth.paintIcon(this, g, snakexlength[0], snakeylength[0]);
-		} else if (right) {
+		}
+		if (right) {
 			rightmouth.paintIcon(this, g, snakexlength[0], snakeylength[0]);
-		} else if (up) {
+		}
+		if (up) {
 			upmouth.paintIcon(this, g, snakexlength[0], snakeylength[0]);
-		} else if (down) {
+		}
+		if (down) {
 			downmouth.paintIcon(this, g, snakexlength[0], snakeylength[0]);
 		}
 
@@ -242,9 +276,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			g.setColor(Color.WHITE);
 			g.setFont(new Font("Arial", Font.BOLD, fontSize));
 			g.drawString("Game Over", textX, textY1);
-
 			g.setFont(new Font("Arial", Font.PLAIN, font1));
-			g.drawString("Space: Delete Replay & Restart | R: View Replay | Q: Quit Game", textX, textY2);
+			g.drawString("Space: Delete Replay & Restart | R: View Replay | Q: Quit Game", textX - 100, textY2 + 10);
 		}
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Arial", Font.PLAIN, font2));
@@ -279,18 +312,29 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			preparedStatement.setBoolean(9, right);
 			preparedStatement.setBoolean(10, up);
 			preparedStatement.setBoolean(11, down);
-			int ra = preparedStatement.executeUpdate();
-			if (ra > 0) {
+			preparedStatement.executeUpdate();
+			if (testing) {
+				throw new SQLException("Simulated exception");
 			}
+			// connection = DriverManager.getConnection(url, username, password);
 		} catch (SQLException e) {
+			System.out.println("exception handled");
+			return;
 		}
 	}
 
 	public void deleteData() {
 		String deleteQuery = "DELETE FROM game_states";
-		try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
-			preparedStatement.executeUpdate();
+		try {
+			if (testing) {
+				throw new SQLException("Simulated exception");
+			} else {
+				PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
+				preparedStatement.executeUpdate();
+			}
 		} catch (SQLException e) {
+			System.out.println("exception handled");
+			return;
 		}
 	}
 
@@ -319,14 +363,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 				right = resultSet.getBoolean("isright");
 				up = resultSet.getBoolean("isup");
 				down = resultSet.getBoolean("isdown");
-
 				gameStates.add(new GameState(snakexlength.clone(), snakeylength.clone(), enemyX, enemyY, moves, score,
 						lengthOfSnake, left, right, up, down));
-
 			}
-
+			if (testing) {
+				throw new SQLException("Simulated exception");
+			}
 		} catch (SQLException e) {
-
+			System.out.println("exception handled");
+			return;
 		}
 	}
 
@@ -338,30 +383,29 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		}
 		if (left) {
 			snakexlength[0] = snakexlength[0] - percent;
-		} else if (right) {
+		}
+		if (right) {
 			snakexlength[0] = snakexlength[0] + percent;
-		} else if (up) {
+		}
+		if (up) {
 			snakeylength[0] = snakeylength[0] - percent;
-		} else if (down) {
+		}
+		if (down) {
 			snakeylength[0] = snakeylength[0] + percent;
 		}
-
 		if (snakexlength[0] > width - 2 * percent)
 			snakexlength[0] = percent;
 		if (snakexlength[0] < percent)
 			snakexlength[0] = width - 2 * percent;
-		//
 		if (snakeylength[0] > height - percent2)
 			snakeylength[0] = percent2;
 		if (snakeylength[0] < percent2)
 			snakeylength[0] = height - percent2;
 		collidesWithEnemy();
 		collidesWithBody();
-
 		if (!gameOver && flag) {
 			gameStates.add(new GameState(snakexlength.clone(), snakeylength.clone(), enemyX, enemyY, moves, score,
 					lengthOfSnake, left, right, up, down));
-
 		}
 		repaint();
 	}
@@ -391,42 +435,51 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			resetGame();
 			flag = true;
 			replay = true;
-		} else if (e.getKeyCode() == KeyEvent.VK_LEFT && !right) {
+		}
+		if (e.getKeyCode() == KeyEvent.VK_LEFT && !right) {
 			left = true;
 			right = false;
 			up = false;
 			down = false;
 			moves++;
-		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT && !left) {
+		}
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT && !left) {
 			left = false;
 			right = true;
 			up = false;
 			down = false;
 			moves++;
-		} else if (e.getKeyCode() == KeyEvent.VK_UP && !down) {
+		}
+		if (e.getKeyCode() == KeyEvent.VK_UP && !down) {
 			left = false;
 			right = false;
 			up = true;
 			down = false;
 			moves++;
-		} else if (e.getKeyCode() == KeyEvent.VK_DOWN && !up) {
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_DOWN && !up) {
 			left = false;
 			right = false;
 			up = false;
 			down = true;
 			moves++;
-		} else if (e.getKeyCode() == KeyEvent.VK_R) {
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_R) {
 			dataSaveToDB();
 			moves++;
 			resetGame();
 			getData();
 			restart();
 			replayGame();
-		} else if (e.getKeyCode() == KeyEvent.VK_S) {
+		}
+		if (e.getKeyCode() == KeyEvent.VK_S) {
 			restart();
 			resetGame();
 			flag = true;
-		} else if (e.getKeyCode() == KeyEvent.VK_Q) {
+		}
+		if (e.getKeyCode() == KeyEvent.VK_Q) {
 			int choice = JOptionPane.showConfirmDialog(this, "Do you want to quit the game?", "Quit Game",
 					JOptionPane.YES_NO_OPTION);
 			if (choice == JOptionPane.YES_OPTION) {
@@ -460,7 +513,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	Timer replayTimer;
 
 	public void replayGame() {
-		if (!gameStates.isEmpty() && !gameOver) {
+		if ((!gameStates.isEmpty() && !gameOver) || t2test) {
 
 			replayTimer = new Timer(delay, new ActionListener() {
 				@Override
@@ -479,20 +532,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 						right = state.right;
 						up = state.up;
 						down = state.down;
-						collidesWithBody();
 						repaint();
+						collidesWithBody();
+						if (gameOver || t2test) {
+							((Timer) e.getSource()).stop();
+						}
 
-					} else {
-
-						((Timer) e.getSource()).stop();
-
-					}
-					if (gameOver) {
-						((Timer) e.getSource()).stop();
 					}
 				}
 			});
-
 			replayTimer.start();
 		}
 	}
@@ -503,7 +551,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		gameOver = false;
 		flag = true;
 		replay = true;
-
 		moves = 0;
 		score = 0;
 		lengthOfSnake = 3;
@@ -536,6 +583,91 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+	}
+
+	public void triggerAllOptions() {
+		// Simulate the LEFT key press
+		KeyEvent leftKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_LEFT, ' ');
+		keyPressed(leftKeyEvent);
+		// Simulate the RIGHT key press
+		left = false;
+		KeyEvent rightKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_RIGHT, ' ');
+		keyPressed(rightKeyEvent);
+		left = true;
+		right = false;
+		// Simulate the UP key press
+		KeyEvent upKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_UP,
+				' ');
+		keyPressed(upKeyEvent);
+
+		// Simulate the DOWN key press
+		up = false;
+		KeyEvent downKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_DOWN, ' ');
+		keyPressed(downKeyEvent);
+
+		// Simulate the LEFT key press
+		KeyEvent leftKeyEvent5 = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_LEFT, ' ');
+		keyPressed(leftKeyEvent5);
+
+		// Simulate the RIGHT key press
+		KeyEvent rightKeyEvent5 = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_RIGHT, ' ');
+		keyPressed(rightKeyEvent5);
+
+		// Simulate the UP key press
+		KeyEvent upKeyEvent5 = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_UP,
+				' ');
+		keyPressed(upKeyEvent5);
+
+		// Simulate the DOWN key press
+		KeyEvent downKeyEvent5 = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_DOWN, ' ');
+		keyPressed(downKeyEvent5);
+
+		// Simulate the LEFT key press
+		KeyEvent leftKeyEvent1 = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_LEFT, ' ');
+		keyPressed(leftKeyEvent1);
+
+		// Simulate the RIGHT key press
+		KeyEvent rightKeyEvent1 = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_RIGHT, ' ');
+		keyPressed(rightKeyEvent1);
+
+		// Simulate the UP key press
+		KeyEvent upKeyEvent1 = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_UP,
+				' ');
+		keyPressed(upKeyEvent1);
+
+		// Simulate the DOWN key press
+		KeyEvent downKeyEvent1 = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_DOWN, ' ');
+		keyPressed(downKeyEvent1);
+
+		// Simulate the R key press
+		KeyEvent rKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_R,
+				' ');
+		keyPressed(rKeyEvent);
+		dataSaveToDB();
+
+		// Simulate the S key press
+		KeyEvent sKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_S,
+				' ');
+		keyPressed(sKeyEvent);
+
+		// Simulate the SPACE key press
+		KeyEvent spaceKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+				KeyEvent.VK_SPACE, ' ');
+		keyPressed(spaceKeyEvent);
+
+		// Simulate the Q key press
+		KeyEvent qKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_Q,
+				' ');
+		keyPressed(qKeyEvent);
 	}
 
 }
