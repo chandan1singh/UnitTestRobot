@@ -31,11 +31,12 @@ ALTER USER postgres WITH PASSWORD 'chandan1singh';
             </code>
         </pre>
     </li>
-    <li>Inside the project directory, run the following command to clean and verify the Maven project:
+    <li>Inside the project directory, run the following command to build and verify your Maven project, which includes compiling and running tests:
         <pre>
             <code>
 mvn clean verify
             </code>
         </pre>
     </li>
+    <li>You can find the test results in the /target/site/index.html page.</li>
 </ol>
