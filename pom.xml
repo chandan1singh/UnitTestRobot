@@ -1,144 +1,220 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.sonarqube.example</groupId>
-	<artifactId>sonarqube-maven-example</artifactId>
-	<version>1.0-SNAPSHOT</version>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
-	<name>Example of basic Maven project to integrate with SonarQube</name>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.2.24</version> <!-- You can specify the desired version -->
-		</dependency>
-		<!--
-		https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>5.5.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jmockit</groupId>
-			<artifactId>jmockit</artifactId>
-			<version>1.49</version> <!-- Use the latest version -->
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.example</groupId>
-			<artifactId>my-maven-project</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
+    <modelVersion>4.0.0</modelVersion>
 
-	<build>
+    <groupId>com.sonarqube.example</groupId>
 
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-				</configuration>
-			</plugin>
-		</plugins>
+    <artifactId>sonarqube-maven-example</artifactId>
+
+    <version>1.0-SNAPSHOT</version>
+
+    <name>Example of basic Maven project to integrate with SonarQube</name>
 
 
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
-					<configuration>
-						<source>11</source>
-						<target>11</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.sonarsource.scanner.maven</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.6.0.1398</version>
-				</plugin>
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.4</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+    <dependencies>
 
-	<profiles>
-		<profile>
-			<id>sonar</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<!-- Optional URL to server. Default value is
-				http://localhost:9000 -->
-				<sonar.host.url>
-					http://localhost:9000
-				</sonar.host.url>
-			</properties>
-		</profile>
-		<profile>
-			<id>coverage</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.10.0</version>
-						<configuration>
-							<source>11</source>
-							<target>11</target>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>prepare-agent</id>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>report</id>
-								<goals>
-									<goal>report</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.24</version> <!-- You can specify the desired version -->
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.0</version> <!-- Use the latest version of JUnit Jupiter -->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.0</version> <!-- Use the same version as the API -->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.9.0</version> <!-- Use the latest version of Mockito -->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>3.9.0</version> <!-- Use the latest version of Mockito JUnit Jupiter -->
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+
+
+    <build>
+
+
+        <plugins>
+
+            <plugin>
+
+                <groupId>org.apache.maven.plugins</groupId>
+
+                <artifactId>maven-compiler-plugin</artifactId>
+
+                <version>3.8.1</version>
+
+                <configuration>
+
+                    <source>11</source>
+
+                    <target>11</target>
+
+                </configuration>
+
+            </plugin>
+
+        </plugins>
+
+
+
+        <pluginManagement>
+
+            <plugins>
+
+                <plugin>
+
+                    <groupId>org.apache.maven.plugins</groupId>
+
+                    <artifactId>maven-compiler-plugin</artifactId>
+
+                    <version>3.8.1</version>
+
+                    <configuration>
+
+                        <source>11</source>
+
+                        <target>11</target>
+
+                    </configuration>
+
+                </plugin>
+
+                <plugin>
+
+                    <groupId>org.apache.maven.plugins</groupId>
+
+                    <artifactId>maven-compiler-plugin</artifactId>
+
+                    <version>3.8.1</version>
+
+                </plugin>
+
+                <plugin>
+
+                    <groupId>org.jacoco</groupId>
+
+                    <artifactId>jacoco-maven-plugin</artifactId>
+
+                    <version>0.8.4</version>
+
+                </plugin>
+
+            </plugins>
+
+        </pluginManagement>
+
+    </build>
+
+
+    <profiles>
+
+        <profile>
+
+            <id>coverage</id>
+
+            <activation>
+
+                <activeByDefault>true</activeByDefault>
+
+            </activation>
+
+            <build>
+
+                <plugins>
+
+                    <plugin>
+
+                        <groupId>org.apache.maven.plugins</groupId>
+
+                        <artifactId>maven-compiler-plugin</artifactId>
+
+                        <version>3.8.1</version>
+
+                        <configuration>
+
+                            <source>11</source>
+
+                            <target>11</target>
+
+                        </configuration>
+
+                    </plugin>
+
+                    <plugin>
+
+                        <groupId>org.jacoco</groupId>
+
+                        <artifactId>jacoco-maven-plugin</artifactId>
+
+                        <version>0.8.7</version> <!-- Use the latest version of
+
+                        JaCoCo -->
+
+                        <executions>
+
+                            <execution>
+
+                                <goals>
+
+                                    <goal>prepare-agent</goal>
+
+                                </goals>
+
+                            </execution>
+
+                            <execution>
+
+                                <id>report</id>
+
+                                <phase>prepare-package</phase>
+
+                                <goals>
+
+                                    <goal>report</goal>
+
+                                </goals>
+
+                            </execution>
+
+                        </executions>
+
+                    </plugin>
+
+                </plugins>
+
+            </build>
+
+        </profile>
+
+    </profiles>
 
 </project>
