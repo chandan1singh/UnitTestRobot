@@ -1,28 +1,41 @@
-# SonarQube Basic Maven Example
-
-### This is simple SnakeGame Maven project is importing JaCoCo's coverage report.
-
-## Usage
-
-* Download SonarQube which matches with your Java version from [here](https://www.sonarqube.org/downloads/)
-
-* Start the SonarQube server\
-**For Windows**\
-`YOUR_DIR_PATH\sonarqube\bin\windows-x86-xx\StartSonar.bat`\
-**For other operating systems like Linux/Ubuntu**\
-`YOUR_DIR_PATH/sonarqube/bin/[OS]/sonar.sh console`
-
-* Once the SonarQube Server is up and running then you can visit the SonarQube Dashboard at http://localhost:9000/dashboard/ \
-Default System administrator credentials are **admin/admin**
-
-* Build the project, execute all the tests and analyze the project with SonarQube Scanner for Maven\
-**`mvn clean verify sonar:sonar`**\
-or\
-**`mvn clean install sonar:sonar`**
-        
-* Click on the project name to see the code quality inspection
-<br />
-
-## Documentation
-
-[SonarScanner for Maven](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-maven/)
+<ol>
+    <li>Download the latest Maven with the default JDK from <a href="https://phoenixnap.com/kb/install-maven-on-ubuntu">this link</a>.</li>
+    <li>Download PostgreSQL locally.</li>
+        <pre>
+        <code>sudo apt install postgresql</code>
+                </pre>
+    <li>Create a table inside the PostgreSQL database using the following SQL query:
+        <pre>
+            <code>
+CREATE TABLE game_states(
+    id serial primary key,
+    snakeX int[],
+    snakeY int[],
+    enemyX int,
+    enemyY int,
+    moves int,
+    score int,
+    lengthOfSnake int,
+    isleft boolean,
+    isright boolean,
+    isup boolean,
+    isdown boolean
+);
+            </code>
+        </pre>
+    </li>
+    <li>Update the PostgreSQL user "postgres" password to 'chandan1singh':
+        <pre>
+            <code>
+ALTER USER postgres WITH PASSWORD 'chandan1singh';
+            </code>
+        </pre>
+    </li>
+    <li>Inside the project directory, run the following command to clean and verify the Maven project:
+        <pre>
+            <code>
+mvn clean verify
+            </code>
+        </pre>
+    </li>
+</ol>
