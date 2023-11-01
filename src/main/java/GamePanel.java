@@ -76,6 +76,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	public int height3;
 	public int w1;
 	public int h1;
+	public int o1;
+	public int o2;
 
 	public ArrayList<GameState> gameStates;
 	public int currentStateIndex;
@@ -112,9 +114,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		Sx0 = Integer.parseInt(properties.getProperty("Sx0"));
 		Sx1 = Integer.parseInt(properties.getProperty("Sx1"));
 		Sx2 = Integer.parseInt(properties.getProperty("Sx2"));
-
 		Sy0 = Integer.parseInt(properties.getProperty("Sy0"));
-
 		font1 = Integer.parseInt(properties.getProperty("font1"));
 		font2 = Integer.parseInt(properties.getProperty("font2"));
 		height2 = Integer.parseInt(properties.getProperty("height2"));
@@ -124,6 +124,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		url = properties.getProperty("database.url");
 		username = properties.getProperty("database.username");
 		password = properties.getProperty("database.password");
+		o1 = Integer.parseInt(properties.getProperty("o1"));
+		o2 = Integer.parseInt(properties.getProperty("o2"));
 	}
 
 	String url;
@@ -216,10 +218,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		super.paint(g);
 
 		g.setColor(Color.WHITE);
-		g.drawRect(percent - 1, OriginY, width - 49, Rheight);
-		g.drawRect(percent - 1, percent2 - 1, width - 49, height - 125);
+		g.drawRect(percent - 1, OriginY, o1, Rheight);
+		g.drawRect(percent - 1, percent2 - 1, o1, o2);
 		g.setColor(Color.BLACK);
-		g.fillRect(percent, percent2, width - 51, height - 125);
+		g.fillRect(percent, percent2, o1 - 2, o2);
 
 		if (moves == 0) {
 			snakexlength[0] = Sx0;
@@ -316,7 +318,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			if (testing) {
 				throw new SQLException("Simulated exception");
 			}
-			// connection = DriverManager.getConnection(url, username, password);
 		} catch (SQLException e) {
 			System.out.println("exception handled");
 			return;
@@ -537,7 +538,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 						if (gameOver || t2test) {
 							((Timer) e.getSource()).stop();
 						}
-
 					}
 				}
 			});
