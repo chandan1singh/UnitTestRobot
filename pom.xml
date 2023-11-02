@@ -14,7 +14,7 @@
 
     <version>1.0-SNAPSHOT</version>
 
-    <name>Example of basic Maven project to integrate with SonarQube</name>
+    <name>Example of basic Maven project</name>
 
 
     <dependencies>
