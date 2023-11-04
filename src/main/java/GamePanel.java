@@ -339,11 +339,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		}
 	}
 
+	public ResultSet resultSet;
+
 	public void getData() {
 		gameStates.clear();
 		String selectQuery = "SELECT * FROM game_states";
 		try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
-			ResultSet resultSet = preparedStatement.executeQuery();
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				Integer[] snakeXArray = (Integer[]) resultSet.getArray("snakeX").getArray();
@@ -585,26 +587,33 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 	}
 
+	KeyEvent leftKeyEvent;
+	KeyEvent rightKeyEvent;
+	KeyEvent upKeyEvent;
+	KeyEvent downKeyEvent;
+	KeyEvent rKeyEvent;
+	KeyEvent qKeyEvent;
+
 	public void triggerAllOptions() {
 		// Simulate the LEFT key press
-		KeyEvent leftKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+		leftKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
 				KeyEvent.VK_LEFT, ' ');
 		keyPressed(leftKeyEvent);
 		// Simulate the RIGHT key press
 		left = false;
-		KeyEvent rightKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+		rightKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
 				KeyEvent.VK_RIGHT, ' ');
 		keyPressed(rightKeyEvent);
 		left = true;
 		right = false;
 		// Simulate the UP key press
-		KeyEvent upKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_UP,
+		upKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_UP,
 				' ');
 		keyPressed(upKeyEvent);
 
 		// Simulate the DOWN key press
 		up = false;
-		KeyEvent downKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
+		downKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0,
 				KeyEvent.VK_DOWN, ' ');
 		keyPressed(downKeyEvent);
 
@@ -649,7 +658,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		keyPressed(downKeyEvent1);
 
 		// Simulate the R key press
-		KeyEvent rKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_R,
+		rKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_R,
 				' ');
 		keyPressed(rKeyEvent);
 		dataSaveToDB();
@@ -665,7 +674,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		keyPressed(spaceKeyEvent);
 
 		// Simulate the Q key press
-		KeyEvent qKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_Q,
+		qKeyEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_Q,
 				' ');
 		keyPressed(qKeyEvent);
 	}
