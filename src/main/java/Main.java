@@ -19,7 +19,7 @@ public class Main {
     public static Properties loadProperties(String fileName) throws IOException {
         Properties properties = new Properties();
         InputStream input = Main.class.getClassLoader().getResourceAsStream(fileName);
-                properties.load(input);
+        properties.load(input);
         return properties;
     }
 
@@ -30,7 +30,8 @@ public class Main {
     }
 
     public static boolean test = false;
-    public static void createGameWindow(int windowWidth, int windowHeight) {
+
+    public static JFrame createGameWindow(int windowWidth, int windowHeight) {
         JFrame frame = new JFrame("Snake Game");
         frame.setBounds(10, 10, windowWidth, windowHeight);
         frame.setResizable(false);
@@ -39,5 +40,6 @@ public class Main {
         panel.setBackground(Color.DARK_GRAY);
         frame.add(panel);
         frame.setVisible(true);
+        return frame; // Return the JFrame.
     }
 }
