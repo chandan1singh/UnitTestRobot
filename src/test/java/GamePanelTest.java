@@ -1,74 +1,123 @@
 
-import java.awt.Container;
-
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import java.awt.Graphics;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import org.junit.AfterClass;
 import org.junit.jupiter.api.AfterAll;
 // import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-
-import java.awt.Container;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.awt.Container;
-
 // import net.bytebuddy.utility.dispatcher.JavaDispatcher.Container;
 
 public class GamePanelTest {
-    GamePanel gp = new GamePanel(1000, 1000, true);
+
+    private GamePanel gamePanel;
+
+    @BeforeEach
+    public void setUp() {
+        gamePanel = new GamePanel(800, 600, true);
+        gamePanel.testing = true;
+    }
+
+    @Test
+    public void testCon() {
+        gamePanel.Con();
+        assertNotNull(gamePanel.connection);
+    }
+
+    @Test
+    public void testNewEnemy() {
+        gamePanel.newEnemy();
+        assertTrue(gamePanel.enemyX >= 0 && gamePanel.enemyX < gamePanel.width);
+        assertTrue(gamePanel.enemyY >= 0 && gamePanel.enemyY < gamePanel.height);
+    }
+
+    @Test
+    public void testCollisionWithBody() {
+        gamePanel.snakexlength[0] = 100;
+        gamePanel.snakeylength[0] = 100;
+        gamePanel.snakexlength[1] = 100;
+        gamePanel.snakeylength[1] = 120;
+        gamePanel.lengthOfSnake = 2;
+        gamePanel.collidesWithBody();
+        assertTrue(gamePanel.gameOver);
+    }
+
+    @Test
+    public void testMainMethod() {
+        try {
+            Main m2 = new Main();
+            m2.test = true;
+            m2.main(null);
+            // If the main method completes without throwing an exception,
+            // we consider it a success.
+            assertTrue(true);
+        } catch (IOException e) {
+            // If an IOException is thrown during execution, fail the test.
+            assertTrue(false, "IOException occurred: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCollisionWithEnemy() {
+        gamePanel.snakexlength[0] = gamePanel.enemyX;
+        gamePanel.snakeylength[0] = gamePanel.enemyY;
+        int initialScore = gamePanel.score;
+        int initialLength = gamePanel.lengthOfSnake;
+        gamePanel.collidesWithEnemy();
+        assertTrue(initialScore < gamePanel.score);
+        assertTrue(initialLength < gamePanel.lengthOfSnake);
+    }
+
+    private static Properties properties;
+
+    @BeforeAll
+    public static void setup() {
+        try {
+            properties = Main.loadProperties("Main.properties");
+        } catch (IOException e) {
+            fail("Exception thrown during setup: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testLoadProperties() {
+        assertNotNull(properties);
+        assertFalse(properties.isEmpty());
+    }
+
+    @Test
+    public void testChooseScreenSize() {
+        int[] dimensions = Main.chooseScreenSize(properties);
+        assertNotNull(dimensions);
+        assertEquals(2, dimensions.length);
+        assertTrue(dimensions[0] > 0);
+        assertTrue(dimensions[1] > 0);
+    }
 
     @Test
     void closeGameWindow() {
-        JFrame frame = new JFrame("Game Frame");
+        JFrame frame = new JFrame("Test Frame");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         GamePanel gamePanel = new GamePanel(1000, 1000, false);
         frame.add(gamePanel);
+        frame.pack();
+        frame.setVisible(true);
         gamePanel.closeGameWindow();
+        assertFalse(frame.isDisplayable());
     }
 
-    @Test
-    public void MaintTest() {
-        try {
-            Main.test = true;
-            Main.main(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    GamePanel gp = new GamePanel(1000, 1000, true);
 
     @Test
     public void assignVariablestest() {
@@ -96,16 +145,6 @@ public class GamePanelTest {
     }
 
     @Test
-    public void testEnemy() {
-        gp.gameOver = true;
-        assertEquals(true,gp.gameOver);
-        gp.newEnemy();
-        gp.restart();
-        assertEquals(0,gp.moves);
-        gp.replayGame();
-    }
-
-    @Test
     public void saveData() throws Exception {
         int[] snakeX = { 25, 50, 75 };
         int[] snakeY = { 75, 100, 125 };
@@ -119,40 +158,6 @@ public class GamePanelTest {
         boolean up = false;
         boolean down = false;
         gp.saveData(snakeX, snakeY, enemyX, enemyY, moves, score, lengthOfSnake, left, right, up, down);
-    }
-
-    @Test
-    public void getingData() throws Exception {
-        gp.getData();
-    }
-
-    @Test
-    public void MaintTest2() {
-        try {
-            Main m2 = new Main();
-            Main.main(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void MaintTest3() {
-        try {
-            Main.main(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void collidesWithBodyTest() {
-        gp.collidesWithBody();
-    }
-
-    @Test
-    public void collidesWithEnemyTest() {
-        gp.collidesWithEnemy();
     }
 
     private ArrayList<GameState> gameStates = new ArrayList<>();
@@ -172,52 +177,29 @@ public class GamePanelTest {
         boolean down = false;
         gameStates.add(new GameState(snakexlength.clone(), snakeylength.clone(), enemyX, enemyY, moves, score,
                 lengthOfSnake, left, right, up, down));
+        assertNotNull(gameStates);
     }
 
     @Test
     public void dataSaveToDB() {
         gp.replay = true;
+        assertEquals(true, gp.replay);
         gp.gameStates = gameStates;
+        assertEquals(gameStates, gp.gameStates);
         gp.dataSaveToDB();
-    }
-
-    @Test
-    public void newEnemyTest() {
-        gp.newEnemy();
+        gp.getData();
+        assertNotNull(gp.resultSet);
     }
 
     @Test
     public void keyPressedTest() {
         gp.triggerAllOptions();
-    }
-
-    @Test
-    public void actionPerformedMethod() {
-        GamePanel gp2 = new GamePanel(1200, 900, false);
-        gp2.left = true;
-        gp2.right = true;
-        gp2.up = true;
-        gp2.down = true;
-        gp2.gameOver = true;
-        gp2.actionPerformed(null);
-    }
-
-    @Test
-    public void testCloseGameWindow() {
-        gp.closeGameWindow();
-    }
-
-    @Test
-    public void Exceptiontesting() {
-        gp.testing = true;
-        gp.assignVariables();
-    }
-
-    @Test
-    public void GetiingData() {
-        gp.testing = true;
-        gp.getData();
-        gp.deleteData();
+        assertNotNull(gp.leftKeyEvent);
+        assertNotNull(gp.rightKeyEvent);
+        assertNotNull(gp.upKeyEvent);
+        assertNotNull(gp.downKeyEvent);
+        assertNotNull(gp.rKeyEvent);
+        assertNotNull(gp.qKeyEvent);
     }
 
     @Test
@@ -235,31 +217,33 @@ public class GamePanelTest {
         boolean up = false;
         boolean down = false;
         gp.saveData(snakeX, snakeY, enemyX, enemyY, moves, score, lengthOfSnake, left, right, up, down);
+        gp.getData();
+        assertNotNull(gp.resultSet);
     }
 
     @Test
     public void Exceptiontesting2() {
         gp.testing = true;
         gp.Con();
-    }
-
-    @Test
-    public void newEnemyExceptionTesting() {
-        gp.testing = true;
         gp.newEnemy();
+        assertEquals(true, gp.testing);
     }
 
     @Test
     public void testEnemy2() {
         gp.testing = true;
         gp.gameOver = true;
+        assertEquals(true, gp.gameOver);
         gp.newEnemy();
         gp.restart();
         gp.replayGame();
+        assertEquals(true, gp.testing);
+        assertEquals(0, gp.moves);
+        assertEquals(false, gp.gameOver);
     }
 
     @AfterAll
-    public static void afterAllTests() {
+    public static void CleanupCode() {
         GamePanel gp = new GamePanel(1000, 1000, false);
         gp.deleteData();
         gp.restart();
@@ -267,7 +251,18 @@ public class GamePanelTest {
         gp.flag = true;
         gp.replay = true;
         System.out.println("This method runs after all tests in the class.");
+        GamePanel gp2 = new GamePanel(1200, 900, false);
+        gp2.left = true;
+        gp2.right = true;
+        gp2.up = true;
+        gp2.down = true;
+        gp2.gameOver = true;
+        gp2.actionPerformed(null);
+        gp.testing = true;
+        gp.getData();
+        gp.deleteData();
+        gp.testing = true;
+        gp.assignVariables();
     }
-
 
 }
