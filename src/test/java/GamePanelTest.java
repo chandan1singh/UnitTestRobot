@@ -158,6 +158,8 @@ public class GamePanelTest {
         boolean up = false;
         boolean down = false;
         gp.saveData(snakeX, snakeY, enemyX, enemyY, moves, score, lengthOfSnake, left, right, up, down);
+        gp.getData();
+        assertNotNull(gp.resultSet);
     }
 
     private ArrayList<GameState> gameStates = new ArrayList<>();
