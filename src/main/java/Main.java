@@ -29,14 +29,12 @@ public class Main {
         return new int[] { windowWidth, windowHeight };
     }
 
-    public static boolean test = false;
-
     public static JFrame createGameWindow(int windowWidth, int windowHeight) {
         JFrame frame = new JFrame("Snake Game");
         frame.setBounds(10, 10, windowWidth, windowHeight);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        GamePanel panel = new GamePanel(windowWidth, windowHeight, test);
+        GamePanel panel = new GamePanel(windowWidth, windowHeight);
         panel.setBackground(Color.DARK_GRAY);
         frame.add(panel);
         frame.setVisible(true);
