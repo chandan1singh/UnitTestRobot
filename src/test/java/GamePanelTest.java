@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -73,12 +74,15 @@ public class GamePanelTest {
         robot.keyPress(KeyEvent.VK_SPACE);
         robot.keyRelease(KeyEvent.VK_SPACE);
         Thread.sleep(1000);
+        assertEquals(false, gamePanel.gameOver);
         robot.keyPress(KeyEvent.VK_S);
         robot.keyRelease(KeyEvent.VK_S);
         Thread.sleep(1000);
+        assertEquals(false, gamePanel.gameOver);
         robot.keyPress(KeyEvent.VK_Q);
         robot.keyRelease(KeyEvent.VK_Q);
         Thread.sleep(1000);
+        assertNull(Main.jframe);
     }
 
     @Test

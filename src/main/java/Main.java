@@ -9,11 +9,12 @@ import javax.swing.WindowConstants;
 
 public class Main {
 
+    public static JFrame jframe;
     public static void main(String[] args) throws IOException {
         Properties properties;
         properties = loadProperties("Main.properties");
         int[] dimensions = chooseScreenSize(properties);
-        createGameWindow(dimensions[0], dimensions[1]);
+        jframe = createGameWindow(dimensions[0], dimensions[1]);
     }
 
     public static Properties loadProperties(String fileName) throws IOException {
