@@ -6,15 +6,10 @@
         <code>sudo apt install openjdk-17-jdk</code>
        </pre>
     </li>
-    <li>Command to locate the installed Java versions. Run the following command
-       <pre>
-        <code>update-alternatives --display java</code>
-       </pre>
-    </li>
     <li>
      Setting JAVA_HOME:to java 17
        <pre>
-        <code>export JAVA_HOME=/path/to/your/java17/displayed/in/above/command</code>
+        <code>export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/bin/java</code>
        </pre>
     </li>
     <li>
@@ -51,6 +46,13 @@ CREATE TABLE game_states(
         <pre>
             <code>
 ALTER USER postgres WITH PASSWORD 'chandan1singh';
+            </code>
+        </pre>
+    </li>
+    <li>Reboot the system
+        <pre>
+            <code>
+        sudo reboot
             </code>
         </pre>
     </li>
