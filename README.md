@@ -1,5 +1,28 @@
 <ol>
     <li>Download the latest Maven with the default JDK from <a href="https://phoenixnap.com/kb/install-maven-on-ubuntu">this link</a>.</li>
+    <li>
+      Install open jdk 17
+      <pre>
+        <code>sudo apt install openjdk-17-jdk</code>
+       </pre>
+    </li>
+    <li>Command to locate the installed Java versions. Run the following command
+       <pre>
+        <code>update-alternatives --display java</code>
+       </pre>
+    </li>
+    <li>
+     Setting JAVA_HOME:to java 17
+       <pre>
+        <code>export JAVA_HOME=/path/to/your/java17/displayed/in/above/command</code>
+       </pre>
+    </li>
+    <li>
+     Updating PATH to Include Java Binaries:
+       <pre>
+        <code>export PATH=$JAVA_HOME/bin:$PATH</code>
+       </pre>
+    </li>
     <li>Download PostgreSQL locally.</li>
         <pre>
         <code>sudo apt install postgresql</code>
